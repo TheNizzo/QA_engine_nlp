@@ -20,7 +20,7 @@ def show_random_elements(dataset, num_examples=10):
             df[column] = df[column].transform(lambda x: [typ.feature.names[i] for i in x])
     display(HTML(df.to_html()))
 
-def prepare_train_features(examples):
+def prepare_train_features(examples, tokenizer, pad_on_right, max_length, doc_stride):
     # Some of the questions have lots of whitespace on the left, which is not useful and will make the
     # truncation of the context fail (the tokenized question will take a lots of space). So we remove that
     # left whitespace
