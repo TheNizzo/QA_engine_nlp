@@ -96,3 +96,28 @@ def prepare_train_features(examples, tokenizer, pad_on_right, max_length, doc_st
                 tokenized_examples["end_positions"].append(token_end_index + 1)
 
     return tokenized_examples
+
+def show_first_elements(dataset, num_examples=10):
+    assert num_examples <= len(dataset), "Can't pick more elements than there are in the dataset."
+    picks = [i for i in range(num_examples)]
+    
+    df = pd.DataFrame(dataset[picks])
+    for column, typ in dataset.features.items():
+        if isinstance(typ, ClassLabel):
+            df[column] = df[column].transform(lambda i: typ.names[i])
+        elif isinstance(typ, Sequence) and isinstance(typ.feature, ClassLabel):
+            df[column] = df[column].transform(lambda x: [typ.feature.names[i] for i in x])
+    display(HTML(df.to_html()))
+
+def show_gt_vs_predicted(dataset, num_examples=10, predictions=None):
+    assert num_examples <= len(dataset), "Can't pick more elements than there are in the dataset."
+    picks = [i for i in range(num_examples)]
+    
+    df = pd.DataFrame(dataset[picks])
+    for column, typ in dataset.features.items():
+        if isinstance(typ, ClassLabel):
+            df[column] = df[column].transform(lambda i: typ.names[i])
+        elif isinstance(typ, Sequence) and isinstance(typ.feature, ClassLabel):
+            df[column] = df[column].transform(lambda x: [typ.feature.names[i] for i in x])
+    df["predicted"] = predictions[:num_examples]
+    display(HTML(df.to_html()))
