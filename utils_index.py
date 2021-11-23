@@ -42,7 +42,7 @@ def index_model_dot_product_similarity(model, questions, contexts):
   similarity = sentence_transformers.util.dot_score(question_embeddings, embeddings)
   return similarity
 
-def get_ranks(res):
+def get_ranks(res, unique_questions, q_a):
   '''
   From the list of list similarities, calculate the reciprocal rank for 
   each question
@@ -56,7 +56,7 @@ def get_ranks(res):
     index = sorted(range(len(similarities)), key=lambda k: similarities[k])
     index.reverse()
     question = unique_questions[i]
-    for rank in range(len(a)):
+    for rank in range(len(index)):
       if index[rank] in q_a[question]:
         all_ranks.append(rank + 1)
         break
@@ -85,7 +85,7 @@ def create_index(contexts, model, df):
   faiss to index
   Returns that index
   '''
-  embeddings = model.encode(df.context.to_list(), show_progress_bar=True)
+  embeddings = model.encode(contexts, show_progress_bar=True)
 
   embeddings = np.array([embedding for embedding in embeddings]).astype("float32")
 
@@ -106,25 +106,24 @@ def doc_search(questions, model, index, num_results=10):
   D, I = index.search(np.array(vector).astype("float32"), k=num_results)
   return D, I
 
-def MMR_test(res):
+def MMR_test(res, unique_questions, q_a):
   '''
   Compute the MMR
   '''
   test = []
 
-  for i in range(len(I)):
-    for rank in range(len(I[i])):
-      if I[i][rank] in q_a[unique_questions[i]]:
+  for i in range(len(res)):
+    for rank in range(len(res[i])):
+      if res[i][rank] in q_a[unique_questions[i]]:
         test.append(rank + 1)
         break
   r = map(inverse, test)
   return sum(list(r)) / len(test)
 
-def get_top10_context(question):
+def get_top10_context(question, model, index, contexts):
   list_context = []
-  D, I = vector_search([question], model_distilbert_tas, index, num_results=10)
-  a = df.context.to_list()
+  D, I = doc_search([question], model, index, num_results=10)
   for i in I[0]:
-    list_context.append(a[i])
+    list_context.append(contexts[i])
   return list_context
 
