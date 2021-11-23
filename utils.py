@@ -2,6 +2,7 @@ from datasets import ClassLabel, Sequence
 import random
 import pandas as pd
 from IPython.display import display, HTML
+import numpy as np
 
 def show_random_elements(dataset, num_examples=10):
     assert num_examples <= len(dataset), "Can't pick more elements than there are in the dataset."
@@ -168,7 +169,8 @@ def prepare_validation_features(examples, tokenizer, pad_on_right, max_length, d
     return tokenized_examples
 
 from tqdm import tqdm
-def postprocess_qa_prediction(examples, features, raw_predictions, tokenizer, squad_v2, n_best_size = 20, max_answer_length = 30):
+import collections
+def postprocess_qa_predictions(examples, features, raw_predictions, tokenizer, squad_v2, n_best_size = 20, max_answer_length = 30):
     all_start_logits, all_end_logits = raw_predictions
     # Build a map example to its corresponding features.
     example_id_to_index = {k: i for i, k in enumerate(examples["id"])}
@@ -238,7 +240,7 @@ def postprocess_qa_prediction(examples, features, raw_predictions, tokenizer, sq
             # In the very rare edge case we have not a single non-null prediction, we create a fake prediction to avoid
             # failure.
             best_answer = {"text": "", "score": 0.0}
-        print(min_null_score)
+
         # Let's pick our final answer: the best one or the null answer (only for squad_v2)
         if not squad_v2:
             predictions[example["id"]] = best_answer["text"]
