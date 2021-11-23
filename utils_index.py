@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import torch
 
 from beir import util
 from beir.datasets.data_loader import GenericDataLoader
@@ -18,7 +19,9 @@ from faiss import normalize_L2
 
 ### Functions for indexing with asymetric similarity models
 
-def index_model_cosine_similarity(model, questions, contexts):
+def index_model_cosine_similarity(model: SentenceTransformer, 
+                                  questions: List[str], 
+                                  contexts: List[str]) -> List[torch.Tensor]:
   '''
   Calculate the cosine similarity between given questions
   and given contexts by using a given model
@@ -30,7 +33,9 @@ def index_model_cosine_similarity(model, questions, contexts):
   similarity = sentence_transformers.util.pytorch_cos_sim(question_embeddings, embeddings)
   return similarity
 
-def index_model_dot_product_similarity(model, questions, contexts):
+def index_model_dot_product_similarity(model: SentenceTransformer, 
+                                       questions: List[str], 
+                                       contexts: List[str]) -> List[torch.Tensor]:
   '''
   Calculate the dot product similarity between given questions
   and given contexts by using a given model
@@ -42,7 +47,9 @@ def index_model_dot_product_similarity(model, questions, contexts):
   similarity = sentence_transformers.util.dot_score(question_embeddings, embeddings)
   return similarity
 
-def get_ranks(res, unique_questions, q_a):
+def get_ranks(res: List[torch.Tensor], 
+              unique_questions: List[str], 
+              q_a: Dict[str, List[int]])  -> List[int]:
   '''
   From the list of list similarities, calculate the reciprocal rank for 
   each question
@@ -62,7 +69,7 @@ def get_ranks(res, unique_questions, q_a):
         break
   return all_ranks
 
-def get_top10_asymetric(similarities):
+def get_top10_asymetric(similarities: List[torch.Tensor]) -> List[int]:
   '''
   Get the top 10 contexts who are the most similar to a 
   given question.
@@ -74,12 +81,14 @@ def get_top10_asymetric(similarities):
   return index[:10]
 
 # To use with map()
-def inverse(n):
+def inverse(n: int):
   return 1/n
 
 ### Functions for indexing with nearest neighbors
 
-def create_index(contexts, model, df):
+def create_index(contexts: List[str], 
+                 model: SentenceTransformer, 
+                 df: pd.DataFrame) -> faiss.IndexFlatL2:
   '''
   Use a sentence-transformer model to encode our contexts, and use
   faiss to index
@@ -96,7 +105,10 @@ def create_index(contexts, model, df):
 
   return index
 
-def doc_search(questions, model, index, num_results=10):
+def doc_search(questions: List[str], 
+               model: SentenceTransformer, 
+               index: faiss.IndexFlatL2, 
+               num_results: int=10) -> Union[List[float], List[int]]:
   '''
   For all questions given as parameters, search for the top k documents 
   corresponding to a given question
@@ -106,7 +118,9 @@ def doc_search(questions, model, index, num_results=10):
   D, I = index.search(np.array(vector).astype("float32"), k=num_results)
   return D, I
 
-def MMR_test(res, unique_questions, q_a):
+def MMR_test(res: List[List[int]], 
+             unique_questions: List[str], 
+             q_a: Dict[str, List[int]]) -> float:
   '''
   Compute the MMR
   '''
@@ -120,7 +134,10 @@ def MMR_test(res, unique_questions, q_a):
   r = map(inverse, test)
   return sum(list(r)) / len(test)
 
-def get_top10_context(question, model, index, contexts):
+def get_top10_context(question: str, 
+                      model: SentenceTransformer, 
+                      index: faiss.IndexFlatL2, 
+                      contexts: List[str]) -> List[str]:
   list_context = []
   D, I = doc_search([question], model, index, num_results=10)
   for i in I[0]:
