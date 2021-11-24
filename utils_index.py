@@ -10,6 +10,7 @@ from datasets import load_dataset, load_metric
 from typing import List
 from typing import Dict
 from typing import Tuple
+from typing import Union
 
 from sentence_transformers import SentenceTransformer
 import sentence_transformers.util

@@ -13,6 +13,13 @@ import torch
 
 def get_all_good_entries(qrels: Dict[str, Dict[str, int]], 
                          corpus: Dict[str, Dict[str, str]]) -> List[str]:
+  '''
+  Using qrels (query-answers dictionnary), go through all queries and for
+  queries which are questions, analyze the contexts corresponding to the query.
+  If the context is large enough and isn't added already, we add it in our list
+  of context to add.
+  Return a list of unique contexts from a dataset
+  '''
   all_good_entries = []
 
   for i in qrels:
@@ -33,6 +40,9 @@ def get_all_good_entries(qrels: Dict[str, Dict[str, int]],
   return all_good_entries
 
 def transform_into_dico(d: datasets.dataset_dict.DatasetDict) -> Dict[str, Dict[str, str]]:
+  '''
+  Transform the SQuADv2 dataset into a dictionnary with unique contexts
+  '''
   dico = {}
   for i in range(len(d['validation'])):
     context = d['validation'][i]['context']
@@ -45,6 +55,10 @@ def transform_into_dico(d: datasets.dataset_dict.DatasetDict) -> Dict[str, Dict[
   return dico
 
 def create_list_of_all(dico: Dict[str, Dict[str, str]]) -> Union[List[str], List[str], List[str], List[str]]:
+  '''
+  From a dictionnnary formed with the function above, transform it into a list
+  of questions, contexts, titles and answers
+  '''
   all_questions = []
   all_contexts = []
   all_titles = []
@@ -59,7 +73,8 @@ def create_list_of_all(dico: Dict[str, Dict[str, str]]) -> Union[List[str], List
 
 def get_all_unique_questions(all_questions: List[str],
                              df: pd.DataFrame) -> Union[List[str], Dict[str, List[int]]]:
-
+  '''
+  '''
   seen = set()
   seen_add = seen.add
   unique_questions = [x for x in all_questions if not (x in seen or seen_add(x))]
