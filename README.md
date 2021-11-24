@@ -27,9 +27,11 @@ Regarding our project structure:
 
 * `utils.py` includes functions for tokenization, processing, prediction etc.
 
+* `utils_addcontext.py` includes functions to add unique DBPedia contexts into our dataset
+
 * `util_index.py` includes functions for using and testing the different pre-trained models, the MRR computation and some functions to get results from these models (like getting the top k relevant documents regarding a question)
 
-* `question_answering.ipynb`
+* `question_answering_student.ipynb` includes the code to train our question-answering model, based on the `question_answering.ipyng` notebook 
 
 * `NLP_Final_Part2.ipynb` contains all the code to create our searchable index: the preprocessing to increase the volume of our dataset, testing the different models' performances etc.
 
