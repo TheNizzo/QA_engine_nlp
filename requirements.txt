@@ -16,7 +16,9 @@ debugpy==1.5.1
 decorator==5.1.0
 defusedxml==0.7.1
 dill==0.3.4
+elasticsearch==7.15.2
 entrypoints==0.3
+faiss-cpu==1.7.1.post2
 filelock==3.3.2
 frozenlist==1.2.0
 fsspec==2021.11.0
