@@ -20,6 +20,7 @@ jupyter notebook
 ```
 * Cells already have their outputs shown, but feel free to run all cells again (order of cell execution very important).
 
+To run the notebooks, simply load them locally by using Jupyter Notebook or by loading it on Google Colab.
 When running the notebooks, be sure to have the files utils.py and util_index.py either in the same level as the notebooks if running them locally, or loaded in Colab.
 We recommend running our notebooks in Colab and take advantage of Colab's GPUs.
 
