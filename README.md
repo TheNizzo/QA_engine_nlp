@@ -1,6 +1,9 @@
 # QA_engine_nlp
 Project's Github: [here](https://github.com/mvonwyl/epita/tree/master/NLP/08)
 
+WE highly recomend running the project's notebook on colab, since it comes with a performent GPU. We could'nt get the training to work on our local computers since we have very little RAM and no GPU on our devices. However, the project should run perfectly locally in case you have a powerful PC. 
+
+
 In order to get the project running and test the code please proceed with the following:
 * Create a python3 environment, for exemple: 
 ```
