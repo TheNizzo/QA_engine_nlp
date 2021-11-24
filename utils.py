@@ -3,8 +3,10 @@ import random
 import pandas as pd
 from IPython.display import display, HTML
 import numpy as np
+from datasets import Dataset, DatasetDict
+from transformers import AutoTokenizer
 
-def show_random_elements(dataset, num_examples=10):
+def show_random_elements(dataset : Dataset, num_examples: int = 10):
     assert num_examples <= len(dataset), "Can't pick more elements than there are in the dataset."
     picks = []
     for _ in range(num_examples):
@@ -21,7 +23,7 @@ def show_random_elements(dataset, num_examples=10):
             df[column] = df[column].transform(lambda x: [typ.feature.names[i] for i in x])
     display(HTML(df.to_html()))
 
-def prepare_train_features(examples, tokenizer, pad_on_right, max_length, doc_stride):
+def prepare_train_features(examples: DatasetDict, tokenizer: AutoTokenizer, pad_on_right: bool, max_length: int, doc_stride: int) -> list:
     # Some of the questions have lots of whitespace on the left, which is not useful and will make the
     # truncation of the context fail (the tokenized question will take a lots of space). So we remove that
     # left whitespace
@@ -98,7 +100,7 @@ def prepare_train_features(examples, tokenizer, pad_on_right, max_length, doc_st
 
     return tokenized_examples
 
-def show_first_elements(dataset, num_examples=10):
+def show_first_elements(dataset: Dataset, num_examples: int = 10):
     assert num_examples <= len(dataset), "Can't pick more elements than there are in the dataset."
     picks = [i for i in range(num_examples)]
     
@@ -110,7 +112,7 @@ def show_first_elements(dataset, num_examples=10):
             df[column] = df[column].transform(lambda x: [typ.feature.names[i] for i in x])
     display(HTML(df.to_html()))
 
-def show_gt_vs_predicted(dataset, num_examples=10, predictions=None):
+def show_gt_vs_predicted(dataset: Dataset, num_examples: int = 10, predictions: list = None):
     assert num_examples <= len(dataset), "Can't pick more elements than there are in the dataset."
     picks = [i for i in range(num_examples)]
     
@@ -123,7 +125,7 @@ def show_gt_vs_predicted(dataset, num_examples=10, predictions=None):
     df["predicted"] = predictions[:num_examples]
     display(HTML(df.to_html()))
 
-def prepare_validation_features(examples, tokenizer, pad_on_right, max_length, doc_stride):
+def prepare_validation_features(examples: Dataset, tokenizer: AutoTokenizer, pad_on_right: bool, max_length: int, doc_stride: int) -> list:
     # Some of the questions have lots of whitespace on the left, which is not useful and will make the
     # truncation of the context fail (the tokenized question will take a lots of space). So we remove that
     # left whitespace
@@ -170,7 +172,7 @@ def prepare_validation_features(examples, tokenizer, pad_on_right, max_length, d
 
 from tqdm import tqdm
 import collections
-def postprocess_qa_predictions(examples, features, raw_predictions, tokenizer, squad_v2, n_best_size = 20, max_answer_length = 30):
+def postprocess_qa_predictions(examples: Dataset, features: list, raw_predictions: list, tokenizer: AutoTokenizer, squad_v2: bool, n_best_size: int = 20, max_answer_length: int = 30) -> list:
     all_start_logits, all_end_logits = raw_predictions
     # Build a map example to its corresponding features.
     example_id_to_index = {k: i for i, k in enumerate(examples["id"])}
